@@ -3,6 +3,7 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
+  "packageManager": "pnpm@11.7.0",
   "description": "MeterMaid — a cross-platform LUFS / loudness meter built with Tauri",
   "author": "David Neal <david@reverentgeek.com>",
   "license": "MIT",
