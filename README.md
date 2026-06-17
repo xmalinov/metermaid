@@ -82,6 +82,26 @@ staples the ticket. See the Tauri macOS signing docs for the hardened-runtime en
 MeterMaid is built on Tauri 2 and is developed primarily on **macOS**. Windows and Linux
 should work but are less exercised.
 
+On **Windows**, the Rust MSVC toolchain needs the Visual C++ linker (`link.exe`). Installing
+the Visual Studio Build Tools installer is not enough on its own — you must select the C++
+components. In the **Visual Studio Installer → Modify → Individual components**, install:
+
+- **MSVC v143 - VS 2022 C++ build tools** for your architecture
+- **Windows 11 SDK** (or the Windows 10 SDK)
+
+On **Windows on ARM (ARM64)** this is the usual cause of `error: linker 'link.exe' not found`:
+the default x64 component does not include the ARM64 linker. Make sure you have:
+
+- The **aarch64-pc-windows-msvc** Rust toolchain (`rustup default stable-aarch64-pc-windows-msvc`;
+  confirm `rustc -vV` reports `host: aarch64-pc-windows-msvc`)
+- The **MSVC v143 - VS 2022 C++ ARM64/ARM64EC build tools** component
+- A build run from the **ARM64 Native Tools Command Prompt for VS 2022**, whose environment
+  puts the matching `link.exe` on `PATH`
+
+Mixing an x64 Rust toolchain (running under emulation) with only the ARM64 toolset installed —
+or vice versa — is the most common reason the linker isn't found; keep the Rust host triple and
+the installed C++ toolset on the same architecture.
+
 On **Linux**, the Tauri stack still depends on GTK3 / WebKitGTK. `cargo audit` therefore
 reports several "unmaintained" advisories for transitive GTK3 (`gtk`, `gdk`, `atk`, …) and
 `glib` crates, plus `unic-*` crates pulled in via Tauri's URL handling. These are not
